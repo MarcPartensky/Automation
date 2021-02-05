@@ -1,39 +1,65 @@
 #!/usr/bin/env python
+
 """
 Send markdown file to the website of Marc Partensky
 as an article to be read by others.
 """
 
 import os
-import sys
-import requests
 import argparse
+import requests
+import logging
 import yaml
+# from rich import print
+
+CONFIG_PATH = os.path.abspath(
+    os.path.join(
+        os.environ['PROGRAMS_PATH'],
+        'automation',
+        'markdown.yml'
+    )
+)
+
+with open(CONFIG_PATH, 'r') as file:
+    config = yaml.safe_load(file)
+
+logging.info(config)
 
 parser = argparse.ArgumentParser(
     description=__doc__,
 )
 
 parser.add_argument(
+    'file',
+    help="file to send"
+)
+
+parser.add_argument(
     '--url', '-u',
-    type='str',
-    default=os.environ['WEBSITE_URL'],
+    nargs='+',
+    default=config['url'],
     help="website url"
 )
 
 parser.add_argument(
     '--method', '-m',
-    type='str',
-    default='POST',
+    nargs='?',
+    default=config['method'],
     help="http method"
 )
 
-args = parser.parse_args()
+parser.add_argument(
+    '--vars', '-v',
+    nargs='+',
+    help="http variables (post/get/...)"
+)
 
+args = parser.parse_args()
+logging.info(args)
 
 # BASE_URL = os.environ['WEBSITE_URL']
 
-path = sys.argv[1].replace('./', '')
+path = args.file.replace('./', '')
 file = path.split('/')[-1]
 
 with open(path, 'r') as f:
@@ -43,12 +69,26 @@ content = '\n'.join(content[1:]).strip()
 if content == '':
     raise Exception("This file is empty!")
 
-url = f"{args['url']}/api/upload-markdown/"
-
 raw_files = {'file': (file, content)}
 
-response = requests.post(url, files=raw_files)
-if response.status_code != 200:
-    print(response)
-else:
-    print(f"{args['url']}/article/{file.replace('.md', '')}")
+for url in args.url:
+    url = url.replace('http://', '').replace('https://', '')
+    logging.info(f"Sending file to {url}.")
+
+    try:
+        response = requests.post(
+            f"https://{url}/api/upload-markdown/",
+            files=raw_files
+        )
+    except:
+        logging.warning(
+            f"No https for {url}, falling back to http.")
+        response = requests.post(
+            f"http://{url}/api/upload-markdown/",
+            files=raw_files
+        )
+
+    if response.status_code != 200:
+        logging.error(response)
+    else:
+        print(f"{url}/article/{file.replace('.md', '')}")
