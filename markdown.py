@@ -35,21 +35,21 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--url', '-u',
+    '-u', '--url',
     nargs='+',
     default=config['url'],
     help="website url"
 )
 
 parser.add_argument(
-    '--method', '-m',
+    '-m', '--method',
     nargs='?',
     default=config['method'],
     help="http method"
 )
 
 parser.add_argument(
-    '--vars', '-v',
+    '-v', '--vars',
     nargs='+',
     help="http variables (post/get/...)"
 )
