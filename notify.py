@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+
 from notifypy import Notify
 import os
 
-http_path = os.path.abspath('http.svg')
+http_path = os.path.abspath("http.svg")
 print(http_path)
 
 notification = Notify(

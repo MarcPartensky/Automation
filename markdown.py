@@ -78,14 +78,16 @@ for url in args.url:
     try:
         response = requests.post(
             f"https://{url}/api/upload-markdown/",
-            files=raw_files
+            files=raw_files,
+            data=args.vars
         )
     except:
         logging.warning(
             f"No https for {url}, falling back to http.")
         response = requests.post(
             f"http://{url}/api/upload-markdown/",
-            files=raw_files
+            files=raw_files,
+            data=args.vars
         )
 
     if response.status_code != 200:
