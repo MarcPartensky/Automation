@@ -70,6 +70,7 @@ def share_file(
         response = session.request(method=method, url=url, params=vars, files=raw_files)
 
 
+
 if __name__ == "__main__":
     args = parser.parse_args()
     logging.info(args)
