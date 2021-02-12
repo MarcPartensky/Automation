@@ -18,6 +18,7 @@ http_path = os.path.abspath("http.svg")
 parser = argparse.ArgumentParser(prog="remember", description=__doc__)
 
 parser.add_argument("-a", "--add", help="Add an item to remember.")
+parser.add_argument("-d", "--delete", type=int, help="Add an item to remember.")
 
 parser.add_argument(
     "-l",
@@ -53,6 +54,8 @@ def remember(args: argparse.Namespace):
     with open("remember.yml", "r") as f:
         content = yaml.safe_load(f)
 
+    print(args)
+
     if not content:
         content = {}
 
@@ -65,6 +68,9 @@ def remember(args: argparse.Namespace):
     if args.add:
         content["list"].append(args.add)
 
+    if args.delete:
+        del content["list"][args.delete]
+
     elif args.next:
         current = content["current"]
         print(content["list"][current])
@@ -72,12 +78,15 @@ def remember(args: argparse.Namespace):
         notify(content["list"][current])
 
     elif args.list:
-        print(content["list"])
+        print(list(enumerate(content["list"])))
 
     with open("remember.yml", "w") as f:
         yaml.dump(content, f)
 
 
 if __name__ == "__main__":
+    if not os.path.exists("remember.yml"):
+        print("No [bold]remember.yml[/bold] file found. Creating one instead.")
+        open("remember.yml").close()
     args = parser.parse_args()
     remember(args)
