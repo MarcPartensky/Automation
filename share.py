@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 """
-Send markdown file to the website of Marc Partensky
-as an article to be read by others.
+Share a file on the website of Marc Partensky
+and send back a link to access it.
 """
+
 
 import os
 import argparse
@@ -11,15 +12,15 @@ import requests
 import logging
 import yaml
 
-# from rich import print
+from rich import print
+
 
 CONFIG_PATH = os.path.abspath(
-    os.path.join(os.environ["PROGRAMS_PATH"], "automation", "markdown.yml")
+    os.path.join(os.environ["PROGRAMS_PATH"], "automation", "share.yml")
 )
 
 with open(CONFIG_PATH, "r") as file:
     config = yaml.safe_load(file)
-
 
 if not config:
     logging.info("Config file path not found. Falling back to default config.")
@@ -27,11 +28,9 @@ if not config:
 
 logging.info(f"config: {config}")
 
-parser = argparse.ArgumentParser(
-    description=__doc__,
-)
+parser = argparse.ArgumentParser(description=__doc__)
 
-parser.add_argument("file", help="file to send")
+parser.add_argument("file", help="file to share.")
 
 parser.add_argument(
     "-u", "--url", dest="urls", nargs="+", default=config["url"], help="website url"
@@ -43,15 +42,13 @@ parser.add_argument(
 
 parser.add_argument("-v", "--vars", nargs="+", help="http variables (post/get/...)")
 
-parser.add_argument(
-    "-c", "--config", default=config, help="Change default config file."
-)
+parser.add_argument("-c", "--config", default=config, help="default config filepath.")
 
 
-def send_markdown(
+def share_file(
     file: str, urls: list = [], method: str = "POST", vars: list = [], config: dict = {}
 ):
-    """Send a markdown file to the website."""
+    """Share a file using a website."""
     path = file.replace("./", "")
     file = path.split("/")[-1]
 
@@ -64,30 +61,16 @@ def send_markdown(
         raise Exception("This file is empty!")
 
     raw_files = {"file": (file, content)}
+    session = requests.Session()
 
     for url in urls:
         url = url.replace("http://", "").replace("https://", "")
         logging.info(f"Sending file to {url}.")
 
-        # response = session.request(method=method, url=url, params=vars, files=raw_files)
-
-        try:
-            response = requests.post(
-                f"https://{url}/api/upload-markdown/", files=raw_files, data=args.vars
-            )
-        except:
-            logging.warning(f"No https for {url}, falling back to http.")
-            response = requests.post(
-                f"http://{url}/api/upload-markdown/", files=raw_files, data=args.vars
-            )
-
-        if response.status_code != 200:
-            logging.error(response)
-        else:
-            print(f"{url}/article/{file.replace('.md', '')}")
+        response = session.request(method=method, url=url, params=vars, files=raw_files)
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
     logging.info(args)
-    send_markdown(args.file, args.urls, args.method, args.vars, args.config)
+    share_file(args.file, args.urls, args.method, args.vars, args.config)
