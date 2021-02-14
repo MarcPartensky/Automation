@@ -1,2 +1,13 @@
 url:
-  - marcpartensky.com
+  # - marcpartensky.com
+  # - websiteofmarcpartensky.herokuapp.com
+  - localhost:8000
+method: POST
+token: 2ddd4e1d-5f87-4d81-9fd9-ed3e045610a5
+# cert: /Users/marcpartensky/programs/website/venv/lib/python3.7/site-packages/certifi/cacert.pem
+permission:
+  - read
+public: False
+expiration: 3600
+max_count: 1
+cert:
