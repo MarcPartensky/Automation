@@ -11,6 +11,7 @@ import argparse
 import requests
 import logging
 import yaml
+import certifi
 import pyperclip
 
 from rich import print
@@ -64,7 +65,7 @@ parser.add_argument(
 # parser.add_argument("-c", "--config", default=config, help="default config filepath.")
 
 parser.add_argument(
-    "-c", "--cert", nargs="?", default=config["cert"], help="tls/ssl certificate path"
+    "-c", "--cert", nargs="?", default=config["cert"] or certifi.where(), help="tls/ssl certificate path"
 )
 
 
