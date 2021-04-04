@@ -75,16 +75,16 @@ def send_markdown(
             response = requests.post(
                 f"https://{url}/api/upload-markdown/", files=raw_files, data=args.vars
             )
+            print(f"https://{url}/article/{file.replace('.md', '')}")
         except:
             logging.warning(f"No https for {url}, falling back to http.")
             response = requests.post(
                 f"http://{url}/api/upload-markdown/", files=raw_files, data=args.vars
             )
+            print(f"http://{url}/article/{file.replace('.md', '')}")
 
         if response.status_code != 200:
             logging.error(response)
-        else:
-            print(f"{url}/article/{file.replace('.md', '')}")
 
 
 if __name__ == "__main__":

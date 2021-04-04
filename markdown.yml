@@ -1,6 +1,6 @@
 url:
-  # - marcpartensky.com
-  - marcpartensky.herokuapp.com
-  - websiteofmarcpartensky.herokuapp.com
+  - marcpartensky.com
+  # - marcpartensky.herokuapp.com
+  # - websiteofmarcpartensky.herokuapp.com
 method:
   - POST

@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 """
-Share a file on the website of Marc Partensky
-and send back a link to access it.
+
 """
 
 
@@ -102,7 +101,6 @@ def share_file(
             protocol = "http"
 
         full_url = f"{protocol}://{url}/f"
-        print(full_url)
 
         response = session.post(
             url=full_url,
