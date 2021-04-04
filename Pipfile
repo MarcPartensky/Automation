@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+certifi = "==2020.12.5"
+chardet = "==4.0.0"
+colorama = "==0.4.4"
+commonmark = "==0.9.1"
+idna = "==2.10"
+pyperclip = "==1.8.1"
+requests = "==2.25.1"
+rich = "==9.11.0"
+typing-extensions = "==3.7.4.3"
+urllib3 = "==1.26.3"
+Pygments = "==2.8.0"
+PyYAML = "==5.4.1"
+
+[dev-packages]
+pylint = "*"
+black = "*"
+
+[requires]
+python_version = "3.7"

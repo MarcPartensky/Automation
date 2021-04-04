@@ -13,6 +13,7 @@ import logging
 import yaml
 import certifi
 import pyperclip
+import logging
 
 from rich import print
 
@@ -65,7 +66,11 @@ parser.add_argument(
 # parser.add_argument("-c", "--config", default=config, help="default config filepath.")
 
 parser.add_argument(
-    "-c", "--cert", nargs="?", default=config["cert"] or certifi.where(), help="tls/ssl certificate path"
+    "-c",
+    "--cert",
+    nargs="?",
+    default=config["cert"] or certifi.where(),
+    help="tls/ssl certificate path",
 )
 
 
@@ -115,9 +120,14 @@ def share_file(
 
         url = f"{protocol}://{response.text}"
 
-        pyperclip.copy(url)
-
-        print("[bold green]Success[/bold green]: [bold]copied url[/bold] to clipboard.")
+        try:
+            pyperclip.copy(url)
+            print(
+                "[bold green]Success[/bold green]: [bold]copied url[/bold] to clipboard."
+            )
+        except:
+            print("[bold green]Success[/bold green]")
+            logging.warning("Could not copy url to clipboard.")
         print(url)
 
 

@@ -7,6 +7,7 @@ import requests
 import argparse
 import yaml
 import pyperclip
+import logging
 
 from rich import print
 
@@ -58,13 +59,19 @@ def fetch(url: str, token: str = None, filename: str = None):
     with open(path, "w") as f:
         f.write(response.text)
 
-    pyperclip.copy(path)
-
-    print(
-        "[bold green]Success[/bold green]: "
-        f"downloaded to '[italic magenta]{path}[/italic magenta]' "
-        "and [bold]copied path[/bold] to clipboard."
-    )
+    try:
+        pyperclip.copy(path)
+        print(
+            "[bold green]Success[/bold green]: "
+            f"downloaded to '[italic magenta]{path}[/italic magenta]' "
+            "and [bold]copied path[/bold] to clipboard."
+        )
+    except:
+        print(
+            "[bold green]Success[/bold green]: "
+            f"downloaded to '[italic magenta]{path}[/italic magenta]' "
+        )
+        logging.warning("Could not copy path to clipboard.")
 
 
 if __name__ == "__main__":
