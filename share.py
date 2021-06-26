@@ -13,7 +13,6 @@ import logging
 import yaml
 import certifi
 import pyperclip
-import logging
 
 from rich import print
 

@@ -8,12 +8,16 @@ import os
 import logging
 import click
 import yaml
+import logging
 
 from rich import print
-
 from notifypy import Notify
+from dotenv import load_dotenv
 
-http_path = "/Users/marcpartensky/Programs/Automation/http.svg"
+from storage import Storage
+
+load_dotenv(".env")
+s = Storage(os.environ["MEMO_PATH"])
 
 
 def notify(message: str):
@@ -21,7 +25,7 @@ def notify(message: str):
     notification = Notify(
         default_notification_title="Remember",
         default_application_name="name",
-        default_notification_icon=http_path,
+        default_notification_icon=s.config.http_path,
         # default_notification_audio=""
     )
 
@@ -34,32 +38,53 @@ def mem():
     """Define a new group of commands."""
 
 
-@mem.command()
-@click.argument("item", type=str)
-def add(item: str):
-    """Add an item to remember."""
+@mem.group()
+def config():
+    """Group of comands for configuration."""
 
+
+@config.command("set")
+@click.argument("key", type=str)
+@click.argument("value", type=str)
+def config_set(key: str, value: str):
+    """Add a new line in config."""
+    s.config[key] = value
+
+
+@config.command(name="get")
+@click.argument("key", type=str)
+def config_get(key: str):
+    """Add a new line in config."""
+    click.echo(s.config[key])
+
+
+@mem.command(name="add")
+@click.argument("item", type=str)
+def mem_add(item: str):
+    """Add an item to remember."""
+    s.items.append(item)
     click.echo("item added")
 
 
-@mem.command()
+@mem.command(name="delete")
 @click.argument("item", type=str)
-def delete():
+def mem_delete():
     """Delete an item to remember."""
     click.echo("delete")
 
 
 @mem.command(name="notify")
-def notify_():
+def mem_notify():
     """Notify with an item to remember"""
     notify("test")
     click.echo("notify")
 
 
 @mem.command(name="list")
-def list_():
+def mem_list():
     """List items to remember"""
-    click.echo("notify")
+    for item in s.items:
+        click.echo(item)
 
 
 # def remember(args: argparse.Namespace):

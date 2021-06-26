@@ -1,3 +1,8 @@
 config:
-
+  http_path: /Users/marcpartensky/Programs/Automation/http.svg
 memo:
+
+items:
+  - a
+  - b
+  - c
