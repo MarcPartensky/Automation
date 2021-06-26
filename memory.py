@@ -13,6 +13,8 @@ from rich import print
 
 from notifypy import Notify
 
+http_path = "/Users/marcpartensky/Programs/Automation/http.svg"
+
 
 def notify(message: str):
     """Notify with a given message."""
@@ -29,6 +31,7 @@ def notify(message: str):
 
 @click.group()
 def mem():
+    """Define a new group of commands."""
     pass
 
 
@@ -102,5 +105,6 @@ def list_():
 #         open("remember.yml").close()
 #     args = parser.parse_args()
 #     remember(args)
+
 if __name__ == "__main__":
     mem()
