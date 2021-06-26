@@ -32,11 +32,10 @@ def notify(message: str):
 @click.group()
 def mem():
     """Define a new group of commands."""
-    pass
 
 
 @mem.command()
-@mem.argument("item", type=str, multiple=True, help="item to remember")
+@click.argument("item", type=str)
 def add(item: str):
     """Add an item to remember."""
 
@@ -44,7 +43,7 @@ def add(item: str):
 
 
 @mem.command()
-@mem.argument("item", type=str, multiple=True, help="item to remember")
+@click.argument("item", type=str)
 def delete():
     """Delete an item to remember."""
     click.echo("delete")
