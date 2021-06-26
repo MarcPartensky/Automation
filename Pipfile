@@ -16,10 +16,13 @@ typing-extensions = "==3.7.4.3"
 urllib3 = "==1.26.3"
 Pygments = "==2.8.0"
 PyYAML = "==5.4.1"
+click = "*"
+notify-py = "*"
 
 [dev-packages]
 pylint = "*"
 black = "*"
+jedi = "*"
 
 [requires]
 python_version = "3.7"
