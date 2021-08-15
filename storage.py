@@ -31,14 +31,13 @@ class Storage:
         if key.startswith("_"):
             return super().__getattribute__(key)
         return self._get([key])
-        # return getattr(self._node, [key])
 
     def __setattr__(self, key: str, value):
         """Set a key/value pair."""
         if key.startswith("_"):
             super().__setattr__(key, value)
         else:
-            self._set([key], value)
+            self._set([], key, value)
 
     def _get(self, key_path: list, raw=False):
         """Get a value given a key path."""
@@ -47,19 +46,25 @@ class Storage:
         value = functools.reduce(lambda a, b: a[b], [content] + key_path)
         if not raw and isinstance(value, dict):
             return DictNode(self, key_path)
-        if not raw and isinstance(value, list):
+        elif not raw and isinstance(value, list):
             return ListNode(self, key_path)
         return value
 
-    def _set(self, key_path: list, value):
+    def _set(self, key_path: list, key, value):
         """Set a value given a key path."""
         with open(self._file, "r") as stream:
             content = yaml.safe_load(stream) or {}
+        node = functools.reduce(lambda node, key: node[key], [content] + key_path)
+        node[key] = value
+        with open(self._file, "w") as stream:
+            yaml.safe_dump(content, stream)
 
-        dict_ = functools.reduce(
-            lambda dict_, key: dict_[key], [content] + key_path[:-1]
-        )
-        dict_[key_path[-1]] = value
+    def _append(self, key_path: list, value):
+        """Append an element to a list inside the storage document."""
+        with open(self._file, "r") as stream:
+            content = yaml.safe_load(stream) or {}
+        node = functools.reduce(lambda node, key: node[key], [content] + key_path)
+        node.append(value)
         with open(self._file, "w") as stream:
             yaml.safe_dump(content, stream)
 
@@ -67,16 +72,35 @@ class Storage:
         """Return string representation of a node."""
         return f"Storage({self._dict})"
 
+    @property
+    def raw(self):
+        """Return the true python representation."""
+        return self([], raw=True)
 
-class DictNode:
-    """Dict node in pyyaml storage."""
+
+class Node:
+    """Return a node inside the pyyaml document."""
 
     def __init__(self, storage: Storage, key_path: list = []):
         """Create a given a storage and a key path."""
-        self._storage = storage
-        self._key_path = key_path
+        self._storage: Storage = storage
+        self._key_path: list = key_path
 
-    def __getattribute__(self, key: str):
+    @property
+    def raw(self):
+        """Return the true python representation."""
+        return self._storage._get(self._key_path, raw=True)
+
+    def __str__(self):
+        """Return string representation of a node."""
+        content = self._storage._get(self._key_path, raw=True)
+        return f"{type(self).__name__}({content})"
+
+
+class DictNode(Node):
+    """Dict node in pyyaml storage."""
+
+    def __getattribute__(self, key):
         """Return the attribute of the node."""
         if key.startswith("_"):
             return super().__getattribute__(key)
@@ -90,20 +114,11 @@ class DictNode:
         if key.startswith("_"):
             super().__setattr__(key, value)
         else:
-            self._storage._set(self._key_path + [key], value)
+            self._storage._set(self._key_path, key, value)
 
-    def __str__(self):
-        """Return string representation of a node."""
-        content = self._storage._get(self._key_path, raw=True)
-        return f"DictNode({content})"
 
-class ListNode:
+class ListNode(Node):
     """List node in pyyaml storage."""
-
-    def __init__(self, storage: Storage, key_path: list = []):
-        """Create a given a storage and a key path."""
-        self._storage = storage
-        self._key_path = key_path
 
     def __getitem__(self, index: int):
         """Return an item from the list node."""
@@ -114,14 +129,18 @@ class ListNode:
             value = ListNode(self, self._key_path + [index])
         return value
 
-    def __setitem__(self, index: int, value: any):
+    def __setitem__(self, index: int, value):
         """Set a key/value pair."""
-        self._storage._set(self._key_path + [index], value)
+        self._storage._set(self._key_path, index, value)
 
-    def __str__(self):
-        """Return string representation of a node."""
-        content = self._storage._get(self._key_path, raw=True)
-        return f"DictNode({content})"
+    def __len__(self):
+        """Return the length of the list node."""
+        return len(self._storage._get(self._key_path).raw)
+
+    def append(self, value):
+        """Append an element to the list node."""
+        self._storage._append(self._key_path, value)
+
 
 if __name__ == "__main__":
     from rich import print
@@ -132,7 +151,9 @@ if __name__ == "__main__":
     storage.a = 1
     storage.b = dict(c=2, d=3)
     storage.c = [1, 2, 3]
+    storage.c.append(4)
     b = storage.b
     print("b:", b)
     print("b.c", b.c)
     print(storage.b.c)
+    storage.salut = "hola"
