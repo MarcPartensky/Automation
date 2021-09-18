@@ -5,44 +5,39 @@ import random
 import logging
 
 from notifypy import Notify
-
 from yaml import safe_load
 
 
 class NotificationMemo(Exception):
     def __str__(self):
-        return "NOTIY_MEMO environment variable must be set to\
-    the path of the icon"
-
-class NotificationIcon(Exception):
-    def __str__(self):
-        return "NOTIY_ICON environment variable must be set to\
+        return "NOTIFY_MEMO environment variable must be set to\
     the path of the icon"
 
 
-print(os.environ.get("NOTIFY"))
-
-memo_path = os.environ.get("NOTIY_ICON")
+memo_path = os.environ.get("NOTIFY_MEMO")
 if not memo_path:
     raise NotificationMemo
 
-image_path = os.environ.get("NOTIY_ICON")
-if not image_path:
-    raise NotificationNoIcon
-
 with open(memo_path, "r") as file:
-    tips = safe_load(file)
+    memo = safe_load(file)
 
+tips = memo["tips"]
+tips = list(tips.items())
 tip = random.choice(tips)
-print(tip)
+logging.info(str(tip))
 
-logging.info("http_path: " + http_path)
+notification = Notify()
 
-notification = Notify(
-    default_notification_title="title",
-    default_application_name="name",
-    default_notification_icon=http_path,
-    # default_notification_audio=""
-)
-notification.message = "tip"
+logging.info(f"memo: {memo_path}")
+# notify.application_name="Tips",
+notification.title = tip[0]
+icon_path = os.environ.get("NOTIFY_ICON")
+if icon_path:
+    logging.info(f"icon: {icon_path}")
+    notification.icon = icon_path
+audio_path = os.environ.get("NOTIFY_AUDIO")
+if audio_path:
+    logging.info(f"audio: {audio_path}")
+    notification.audio = audio_path
+notification.message = tip[1]["message"]
 notification.send()
