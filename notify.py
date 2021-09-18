@@ -13,5 +13,6 @@ notification = Notify(
     # default_notification_audio=""
 )
 
+
 notification.message = "je te notifie"
 notification.send()

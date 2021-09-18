@@ -22,20 +22,6 @@ from storage import Storage
 load_dotenv(".env")
 s = Storage(os.environ["MEMO_PATH"])
 
-
-class Store:
-    """CRUD group of va"""
-
-    def __init__(self, key_path: list):
-        """Define a crud group of commmands that controls a yaml document
-        given."""
-        self.key_path = key_path
-
-    def add(self, ):
-
-
-a = C
-
 # def c
 # items = ListSection("items")
 # config = DictSection("config")
