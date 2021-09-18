@@ -31,11 +31,11 @@ notification = Notify()
 logging.info(f"memo: {memo_path}")
 # notify.application_name="Tips",
 notification.title = tip[0]
-icon_path = os.environ.get("NOTIFY_ICON")
+icon_path = memo.get("icon")
 if icon_path:
     logging.info(f"icon: {icon_path}")
     notification.icon = icon_path
-audio_path = os.environ.get("NOTIFY_AUDIO")
+audio_path = memo.get("audio")
 if audio_path:
     logging.info(f"audio: {audio_path}")
     notification.audio = audio_path
